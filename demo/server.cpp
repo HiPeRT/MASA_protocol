@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
 {
 
     int socket_desc, client_sock, c, *new_sock;
-    struct sockaddr_in server, client;
+    struct sockaddr_in client;
 
     Communicator Comm;
 
@@ -63,31 +63,48 @@ int main(int argc, char *argv[])
 
     //Accept and incoming connection
     puts("Waiting for incoming connections...");
-    c = sizeof(struct sockaddr_in);
-    while ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t *)&c)))
+
+    if (SOCKET_MODE == SOCK_STREAM)
     {
-        puts("Connection accepted");
-
-        pthread_t sniffer_thread;
-        new_sock = (int *)malloc(1);
-        *new_sock = client_sock;
-
-        if (pthread_create(&sniffer_thread, NULL, connection_handler, (void *)new_sock) < 0)
+        c = sizeof(struct sockaddr_in);
+        while ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t *)&c)))
         {
-            perror("could not create thread");
-            return 1;
+            puts("Connection accepted");
+
+            pthread_t sniffer_thread;
+            new_sock = (int *)malloc(1);
+            *new_sock = client_sock;
+
+            if (pthread_create(&sniffer_thread, NULL, connection_handler, (void *)new_sock) < 0)
+            {
+                perror("could not create thread");
+                return 1;
+            }
+
+            //Now join the thread , so that we dont terminate before the thread
+            //pthread_join( sniffer_thread , NULL);
+            puts("Handler assigned");
         }
 
-        //Now join the thread , so that we dont terminate before the thread
-        //pthread_join( sniffer_thread , NULL);
-        puts("Handler assigned");
+        if (client_sock < 0)
+        {
+            perror("accept failed");
+            return 1;
+        }
     }
-
-    if (client_sock < 0)
+    else
     {
-        perror("accept failed");
-        return 1;
-    }
+        Message *m = new Message;
+
+        //Get the socket descriptor
+        int read_size;
+    
+        //Receive a message from client
+        while (Comm.receive_message(socket_desc,m)==0)
+        {
+            write_message(m);
+        }
+    }    
 
     return 0;
 }

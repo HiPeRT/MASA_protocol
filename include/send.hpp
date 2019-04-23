@@ -12,6 +12,9 @@
 
 #include "serialize.hpp"
 
+#define SOCKET_MODE SOCK_DGRAM //UDP
+//#define SOCKET_MODE SOCK_STREAM //TCP
+
 class Communicator{
 
     public: 
@@ -21,6 +24,7 @@ class Communicator{
     int socket_opened = 0;
     std::string ip;
     char client_message[message_size];
+    struct sockaddr_in server;
 
     Communicator(){}
 
@@ -53,8 +57,7 @@ class Communicator{
 
     int open_client_socket(char *ip, int port)
     {
-        struct sockaddr_in server;
-        sock = socket(AF_INET, SOCK_STREAM, 0);
+        sock = socket(AF_INET, SOCKET_MODE, 0);
         if (sock == -1)
         {
             printf("Could not create socket");
@@ -66,6 +69,12 @@ class Communicator{
         server.sin_addr.s_addr = inet_addr(ip);
         server.sin_family = AF_INET;
         server.sin_port = htons(port);
+
+        if (SOCKET_MODE == SOCK_DGRAM)
+        {
+            socket_opened = 1;
+            return 1;
+        }
 
         /*connect to remote server*/
         if (connect(sock, (struct sockaddr *)&server, sizeof(server)) < 0)
@@ -81,8 +90,7 @@ class Communicator{
 
     int open_server_socket(int port)
     {
-        struct sockaddr_in server;
-        sock = socket(AF_INET, SOCK_STREAM, 0);
+        sock = socket(AF_INET, SOCKET_MODE, 0);
         if (sock == -1)
         {
             printf("Could not create socket");
@@ -103,6 +111,11 @@ class Communicator{
         }
         puts("bind done");
 
+        if (SOCKET_MODE == SOCK_DGRAM)
+        {            
+            return 1;
+        }
+
         //Listen
         listen(sock, 3);
         return 1;
@@ -114,27 +127,36 @@ class Communicator{
         std::stringbuf *message = new std::stringbuf();
         serialize_coords(m, message);
 
-        /*open socket if not already opened*/
-        if (socket_opened == 0)
+        if (SOCKET_MODE == SOCK_STREAM)
         {
-            std::vector<char> cstr(ip.c_str(), ip.c_str() + ip.size() + 1);
-            int res = open_client_socket(cstr.data(), port);
-            if(res)
-                printf("Socket opened!\n");
-            else
+            /*open socket if not already opened*/
+            if (socket_opened == 0)
             {
-                printf("Problem: socket NOT opened!\n");
-                return 0;
+                std::vector<char> cstr(ip.c_str(), ip.c_str() + ip.size() + 1);
+                int res = open_client_socket(cstr.data(), port);
+                if(res)
+                    printf("Socket opened!\n");
+                else
+                {
+                    printf("Problem: socket NOT opened!\n");
+                    return 0;
+                }
+            }
+
+
+            /*send message to server*/
+            if (send(sock, message->str().data(), message->str().length(), 0) < 0)
+            {
+                puts("Send failed");
+                socket_opened = 0;
             }
         }
-
-
-        /*send message to server*/
-        if (send(sock, message->str().data(), message->str().length(), 0) < 0)
+        else
         {
-            puts("Send failed");
-            socket_opened = 0;
+             sendto(sock, message->str().data(), message->str().length(), 0,
+                (const struct sockaddr *) &server, sizeof(server));
         }
+        
 
         delete message;
         return 1;
@@ -145,6 +167,8 @@ class Communicator{
         int read_size;
         memset(client_message, 0, message_size);
 
+        if (SOCKET_MODE == SOCK_STREAM)
+        {
         while ((read_size = recv(socket_desc, client_message, message_size, 0)) > 0)
         {
             std::string s((char *)client_message, message_size);
@@ -163,6 +187,18 @@ class Communicator{
             perror("recv failed");
             return 1;
         }
+        }
+        else
+        {
+            int len;
+            struct sockaddr_in cliaddr; 
+            read_size = recvfrom(sock, client_message, message_size, 0,
+                    ( struct sockaddr *) &cliaddr, (socklen_t *)&len);
+            std::string s((char *)client_message, message_size);
+            deserialize_coords(s, m);
+            return 0;
+        }
+        
         return 1;
     }
 
