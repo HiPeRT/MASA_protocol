@@ -47,7 +47,7 @@ void prepare_message(Message *m, int idx)
 int main(int argc, char *argv[])
 {
 
-    Communicator Comm;
+    Communicator Comm(SOCK_DGRAM);
 
     Comm.open_client_socket("127.0.0.1",8888);
 

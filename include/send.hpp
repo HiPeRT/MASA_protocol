@@ -12,7 +12,7 @@
 
 #include "serialize.hpp"
 
-#define SOCKET_MODE SOCK_DGRAM //UDP
+//#define SOCKET_MODE SOCK_DGRAM //UDP
 //#define SOCKET_MODE SOCK_STREAM //TCP
 
 class Communicator{
@@ -25,8 +25,16 @@ class Communicator{
     std::string ip;
     char client_message[message_size];
     struct sockaddr_in server;
+    int SOCKET_MODE;
 
-    Communicator(){}
+    Communicator(){
+        SOCKET_MODE = SOCK_DGRAM;
+    }
+
+    Communicator(int operation_mode)
+    {
+        SOCKET_MODE = operation_mode;
+    }
 
     int get_socket(){
         return sock;
@@ -145,7 +153,7 @@ class Communicator{
 
 
             /*send message to server*/
-            if (send(sock, message->str().data(), message->str().length(), 0) < 0)
+            if (send(sock, message->str().data(), message->str().length(), MSG_NOSIGNAL) < 0)
             {
                 puts("Send failed");
                 socket_opened = 0;
@@ -169,24 +177,24 @@ class Communicator{
 
         if (SOCKET_MODE == SOCK_STREAM)
         {
-        while ((read_size = recv(socket_desc, client_message, message_size, 0)) > 0)
-        {
-            std::string s((char *)client_message, message_size);
-            deserialize_coords(s, m);
-            return 0;
-        }
+            while ((read_size = recv(socket_desc, client_message, message_size, MSG_NOSIGNAL)) > 0)
+            {
+                std::string s((char *)client_message, message_size);
+                deserialize_coords(s, m);
+                return 0;
+            }
 
-        if (read_size == 0)
-        {
-            puts("Client disconnected");
-            fflush(stdout);
-            return 1;
-        }
-        else if (read_size == -1)
-        {
-            perror("recv failed");
-            return 1;
-        }
+            if (read_size == 0)
+            {
+                puts("Client disconnected");
+                fflush(stdout);
+                return 1;
+            }
+            else if (read_size == -1)
+            {
+                perror("recv failed");
+                return 1;
+            }
         }
         else
         {

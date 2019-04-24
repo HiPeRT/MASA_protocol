@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     int socket_desc, client_sock, c, *new_sock;
     struct sockaddr_in client;
 
-    Communicator Comm;
+    Communicator Comm(SOCK_DGRAM);
 
     Comm.open_server_socket(8888);
     socket_desc = Comm.get_socket();
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
     //Accept and incoming connection
     puts("Waiting for incoming connections...");
 
-    if (SOCKET_MODE == SOCK_STREAM)
+    if (Comm.SOCKET_MODE == SOCK_STREAM)
     {
         c = sizeof(struct sockaddr_in);
         while ((client_sock = accept(socket_desc, (struct sockaddr *)&client, (socklen_t *)&c)))
@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
  * */
 void *connection_handler(void *socket_desc)
 {
-    Communicator myComm;
+    Communicator myComm(SOCK_STREAM);
     Message *m = new Message;
 
     //Get the socket descriptor
