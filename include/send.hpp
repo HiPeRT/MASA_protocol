@@ -59,7 +59,14 @@ class Communicator{
     {
         std::istringstream is(s);
         cereal::PortableBinaryInputArchive retrieve(is);
-        retrieve(*m);
+        try 
+        {
+            retrieve(*m);
+        }
+        catch (std::bad_alloc& ba)
+        {
+            std::cout << "Packet drop"<<std::endl; 
+        }
     }
     
 
