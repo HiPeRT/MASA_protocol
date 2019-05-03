@@ -14,7 +14,8 @@ enum Categories : uint8_t
     C_marelli1 = 20,
     C_marelli2 = 21,
     C_quattroporte = 30,
-    C_levante = 31
+    C_levante = 31,
+    C_rover = 40
 };
 
 enum LightStatus : uint8_t
