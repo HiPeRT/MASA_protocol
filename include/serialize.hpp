@@ -56,8 +56,14 @@ struct RoadUser{
 
 
 //Hypothetic structure for vehicle
-struct RoadVehicle : RoadUser {
-    uint8_t status;
+struct RoadVehicle {
+    float latitude;
+    float longitude;
+    uint8_t speed;
+    uint8_t orientation;
+    Categories category;
+
+    //uint8_t status;
     uint8_t acc_x;
     uint8_t acc_y;
     uint8_t rpm;
@@ -73,16 +79,17 @@ struct RoadVehicle : RoadUser {
     template<class Archive>
     void serialize(Archive &archive)
     {
-        archive(status,
+        archive(
+                latitude,
+                longitude,
                 speed,
+                orientation,
+                category,
+		//status,
                 acc_x,
                 acc_y,
                 rpm,
-                gear,
-                latitude,
-                longitude,
-                orientation,
-                category
+                gear
                 //yaw,
                 //steer_ang,
                 //gyr_x,
