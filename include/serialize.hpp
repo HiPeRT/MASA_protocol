@@ -6,9 +6,9 @@
 
 enum Categories : uint8_t
 {
-    C_person = 14, 
+    C_person = 14,
     C_bycicle = 1,
-    C_car = 6, 
+    C_car = 6,
     C_motorbike = 13,
     C_bus = 5,
     C_marelli1 = 20,
@@ -20,7 +20,7 @@ enum Categories : uint8_t
 
 enum LightStatus : uint8_t
 {
-    L_green = 1, 
+    L_green = 1,
     L_yellow = 2,
     L_red = 3
 };
@@ -54,17 +54,58 @@ struct RoadUser{
 
 };
 
+
+//Hypothetic structure for vehicle
+struct RoadVehicle : RoadUser {
+    uint8_t status;
+    uint8_t acc_x;
+    uint8_t acc_y;
+    uint8_t rpm;
+    uint8_t gear;
+    //uint16_t yaw;
+    //uint8_t steer_ang;
+    //uint8_t gyr_x;
+    //uint8_t gyr_y;
+
+
+    // More fields to be added here
+
+    template<class Archive>
+    void serialize(Archive &archive)
+    {
+        archive(status,
+                speed,
+                acc_x,
+                acc_y,
+                rpm,
+                gear,
+                latitude,
+                longitude,
+                orientation,
+                category
+                //yaw,
+                //steer_ang,
+                //gyr_x,
+                //gyr_y
+              );
+    }
+};
+
+
+
+
 struct Message{
     uint32_t cam_idx;
     uint64_t t_stamp_ms;
     uint16_t num_objects;
     std::vector<RoadUser> objects;
     std::vector<TrafficLight> lights;
+    RoadVehicle vehicle;
 
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive( cam_idx, t_stamp_ms, num_objects, objects, lights );
+        archive( cam_idx, t_stamp_ms, num_objects, objects, lights, vehicle);
     }
 };
 
