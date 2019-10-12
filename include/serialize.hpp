@@ -61,13 +61,12 @@ struct RoadVehicle {
     float longitude;
     uint8_t speed;
     uint8_t orientation;
-    Categories category;
-
-    //uint8_t status;
+    //Categories category;
     uint8_t acc_x;
     uint8_t acc_y;
     uint8_t rpm;
     uint8_t gear;
+    bool is_distracted;
     //uint16_t yaw;
     //uint8_t steer_ang;
     //uint8_t gyr_x;
@@ -84,12 +83,12 @@ struct RoadVehicle {
                 longitude,
                 speed,
                 orientation,
-                category,
-		//status,
+                //category,
                 acc_x,
                 acc_y,
                 rpm,
-                gear
+                gear,
+                is_distracted
                 //yaw,
                 //steer_ang,
                 //gyr_x,
