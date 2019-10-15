@@ -68,7 +68,7 @@ struct RoadVehicle {
     uint8_t gear;
     bool is_distracted;
     bool we_steer;
-    uint16_t steer_value;
+    int8_t steer_value;
     //uint16_t yaw;
     //uint8_t steer_ang;
     //uint8_t gyr_x;
