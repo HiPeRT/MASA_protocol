@@ -90,7 +90,7 @@ struct RoadVehicle {
                 rpm,
                 gear,
                 is_distracted,
-		we_steer
+		            we_steer
                 //yaw,
                 //steer_ang,
                 //gyr_x,
