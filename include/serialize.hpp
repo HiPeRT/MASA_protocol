@@ -70,6 +70,7 @@ struct RoadVehicle {
     bool we_steer;
     int8_t steer_value;
     //autopilot fields
+    bool    autopilot;
     float   drive_length;
     float   start_auto;
     float   end_auto;
@@ -100,6 +101,7 @@ struct RoadVehicle {
                 is_distracted,
 		            we_steer,
                 steer_value,
+		autopilot,
                 drive_length,
                 start_auto,
                 end_auto,
