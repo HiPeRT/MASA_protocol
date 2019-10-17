@@ -74,7 +74,7 @@ struct RoadVehicle {
     float   start_auto;
     float   end_auto;
     float   fallback_pos;
-    float   car_pos
+    float   car_pos;
 
     //uint16_t yaw;
     //uint8_t steer_ang;
