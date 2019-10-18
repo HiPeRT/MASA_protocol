@@ -68,6 +68,7 @@ struct RoadVehicle {
     uint8_t gear;
     bool is_distracted;
     //bool we_steer;
+    float  km_to_automation,
     int8_t steer_value;
     //autopilot fields
     //bool    autopilot;
@@ -100,6 +101,7 @@ struct RoadVehicle {
                 gear,
                 is_distracted,
 		            //we_steer,
+                km_to_automation,
                 steer_value,
 		            //autopilot,
                 drive_length,
