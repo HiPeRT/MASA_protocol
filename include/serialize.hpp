@@ -141,13 +141,13 @@ struct Message{
 
 
 //Message struct for Christine HMI use-case scenario
-struct ChristineMessage{
+struct ChristineMessage: Message{
     ChristineVehicle cv;
 
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive(cv);
+        archive(cam_idx, cv);
     }
 };
 
