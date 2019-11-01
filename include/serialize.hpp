@@ -130,11 +130,12 @@ struct Message{
     uint16_t num_objects;
     std::vector<RoadUser> objects;
     std::vector<TrafficLight> lights;
+    ChristineVehicle cv;
 
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive( cam_idx, t_stamp_ms, num_objects, objects, lights);
+        archive( cam_idx, t_stamp_ms, num_objects, objects, lights, cv);
     }
 };
 
