@@ -56,11 +56,7 @@ struct RoadUser{
 
 
 //Hypothetic structure for vehicle
-struct Vehicle {
-    float latitude;
-    float longitude;
-    uint8_t speed;
-    uint8_t orientation;
+struct Vehicle : RoadUser{
     uint8_t acc_x;
     uint8_t acc_y;
     uint8_t rpm;
@@ -76,6 +72,7 @@ struct Vehicle {
                 longitude,
                 speed,
                 orientation,
+                category,
                 acc_x,
                 acc_y,
                 rpm,
@@ -85,29 +82,6 @@ struct Vehicle {
 };
 
 
-
-//Generic struct to contain status trigger
-struct StatusDriver: Vehicle {
-    bool is_distracted;
-
-    // More fields to be added here
-
-    template<class Archive>
-    void serialize(Archive &archive)
-    {
-        archive(
-                latitude,
-                longitude,
-                speed,
-                orientation,
-                acc_x,
-                acc_y,
-                rpm,
-                gear,
-		is_distracted
-              );
-    }
-};
 
 
 
@@ -120,7 +94,7 @@ struct ChristineVehicle : Vehicle {
     float   start_auto;
     float   end_auto;
     float   fallback_pos;
-    uint8_t car_pos;    
+    uint8_t car_pos;
 
     template<class Archive>
     void serialize(Archive &archive)
@@ -130,6 +104,7 @@ struct ChristineVehicle : Vehicle {
                 longitude,
                 speed,
                 orientation,
+                category,
                 acc_x,
                 acc_y,
                 rpm,
@@ -166,13 +141,13 @@ struct Message{
 
 
 //Message struct for Christine HMI use-case scenario
-struct ChristineMessage : Message {
+struct ChristineMessage{
     ChristineVehicle cv;
 
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive( cam_idx, t_stamp_ms, num_objects, objects, lights, cv);
+        archive(cv);
     }
 };
 
