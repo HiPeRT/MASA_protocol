@@ -147,7 +147,7 @@ struct ChristineMessage: Message{
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive(cam_idx, t_stamp_ms, cv);
+        archive(cam_idx, t_stamp_ms, num_objects, objects, lights, cv);
     }
 };
 
