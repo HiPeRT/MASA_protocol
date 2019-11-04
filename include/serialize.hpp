@@ -18,6 +18,15 @@ enum Categories : uint8_t
     C_rover = 40
 };
 
+
+// Ports for different messages to be added here
+enum Ports : uint16_t
+{
+    Std_port      = 8888,
+    Prystine_port = 8889
+};
+
+
 enum LightStatus : uint8_t
 {
     L_green = 1,
@@ -57,8 +66,6 @@ struct RoadUser{
 
 //Hypothetic structure for vehicle
 struct Vehicle : RoadUser{
-    uint8_t acc_x;
-    uint8_t acc_y;
     uint8_t rpm;
     uint8_t gear;
 
@@ -73,8 +80,6 @@ struct Vehicle : RoadUser{
                 speed,
                 orientation,
                 category,
-                acc_x,
-                acc_y,
                 rpm,
                 gear
               );
@@ -86,10 +91,10 @@ struct Vehicle : RoadUser{
 
 
 //Vehicle struct for Christine HMI use-case scenario
-struct ChristineVehicle : Vehicle {
-    bool is_distracted;
-    float  km_to_automation;
-    int8_t steer_value;
+struct PrystineVehicle : Vehicle {
+    bool    is_distracted;
+    float   km_to_automation;
+    int8_t  steer_value;
     float   drive_length;
     float   start_auto;
     float   end_auto;
@@ -105,8 +110,6 @@ struct ChristineVehicle : Vehicle {
                 speed,
                 orientation,
                 category,
-                acc_x,
-                acc_y,
                 rpm,
                 gear,
                 is_distracted,
@@ -124,32 +127,6 @@ struct ChristineVehicle : Vehicle {
 
 
 
-struct Message{
-    uint32_t cam_idx;
-    uint64_t t_stamp_ms;
-    uint16_t num_objects;
-    std::vector<RoadUser> objects;
-    std::vector<TrafficLight> lights;
-
-    template<class Archive>
-    void serialize(Archive & archive)
-    {
-        archive( cam_idx, t_stamp_ms, num_objects, objects, lights);
-    }
-};
-
-
-
-//Message struct for Christine HMI use-case scenario
-struct ChristineMessage: Message{
-    ChristineVehicle cv;
-
-    template<class Archive>
-    void serialize(Archive & archive)
-    {
-        archive(cam_idx, t_stamp_ms, cv);
-    }
-};
 
 
 

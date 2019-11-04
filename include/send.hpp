@@ -10,17 +10,18 @@
 #include <arpa/inet.h>  //inet_addr
 #include <unistd.h>     //write
 
-#include "serialize.hpp"
+#include "message.hpp"
 
 //#define SOCKET_MODE SOCK_DGRAM //UDP
 //#define SOCKET_MODE SOCK_STREAM //TCP
 
+template <typename M>
 class Communicator{
 
-    public: 
+    public:
     static const int message_size = 50000;
     int sock;
-    int port; 
+    int port;
     int socket_opened = 0;
     std::string ip;
     char client_message[message_size];
@@ -40,14 +41,14 @@ class Communicator{
         return sock;
     }
 
-    void serialize_coords(Message *m, std::stringbuf* buf)
+    void serialize_coords(M *m, std::stringbuf* buf)
     {
         std::ostream os(buf);
         cereal::PortableBinaryOutputArchive archive(os);
         archive(*m);
     }
 
-    void deserialize_coords(char *buffer, Message *m)
+    void deserialize_coords(char *buffer, M *m)
     {
         std::stringbuf buf(buffer);
         std::istream is(&buf);
@@ -55,22 +56,22 @@ class Communicator{
         retrieve(*m);
     }
 
-    void deserialize_coords(std::string s, Message *m)
+    void deserialize_coords(std::string s, M *m)
     {
         std::istringstream is(s);
         cereal::PortableBinaryInputArchive retrieve(is);
-        try 
+        try
         {
             retrieve(*m);
         }
         catch (std::bad_alloc& ba)
         {
-            std::cout << "Packet drop"<<std::endl; 
+            std::cout << "Packet drop"<<std::endl;
         }
     }
-    
 
-    int open_client_socket(char *ip, int port)
+
+    int open_client_socket(char *ip)
     {
         sock = socket(AF_INET, SOCKET_MODE, 0);
         if (sock == -1)
@@ -80,7 +81,7 @@ class Communicator{
         puts("Socket created");
 
         this->ip = std::string(ip);
-        this->port = port;
+        this->port = setupPort();
         server.sin_addr.s_addr = inet_addr(ip);
         server.sin_family = AF_INET;
         server.sin_port = htons(port);
@@ -103,7 +104,7 @@ class Communicator{
         return 1;
     }
 
-    int open_server_socket(int port)
+    int open_server_socket()
     {
         sock = socket(AF_INET, SOCKET_MODE, 0);
         if (sock == -1)
@@ -112,7 +113,7 @@ class Communicator{
         }
         puts("Socket created");
 
-        this->port = port;
+        this->port = setupPort();
         //Prepare the sockaddr_in structure
         server.sin_family = AF_INET;
         server.sin_addr.s_addr = INADDR_ANY;
@@ -127,7 +128,7 @@ class Communicator{
         puts("bind done");
 
         if (SOCKET_MODE == SOCK_DGRAM)
-        {            
+        {
             return 1;
         }
 
@@ -136,7 +137,7 @@ class Communicator{
         return 1;
     }
 
-    int send_message(Message *m)
+    int send_message(M *m)
     {
         /*serialize coords*/
         std::stringbuf *message = new std::stringbuf();
@@ -148,7 +149,7 @@ class Communicator{
             if (socket_opened == 0)
             {
                 std::vector<char> cstr(ip.c_str(), ip.c_str() + ip.size() + 1);
-                int res = open_client_socket(cstr.data(), port);
+                int res = open_client_socket(cstr.data());
                 if(res)
                     printf("Socket opened!\n");
                 else
@@ -171,13 +172,13 @@ class Communicator{
              sendto(sock, message->str().data(), message->str().length(), 0,
                 (const struct sockaddr *) &server, sizeof(server));
         }
-        
+
 
         delete message;
         return 1;
     }
 
-    int receive_message(int socket_desc, Message *m)
+    int receive_message(int socket_desc, M *m)
     {
         int read_size;
         memset(client_message, 0, message_size);
@@ -206,15 +207,27 @@ class Communicator{
         else
         {
             int len;
-            struct sockaddr_in cliaddr; 
+            struct sockaddr_in cliaddr;
             read_size = recvfrom(sock, client_message, message_size, 0,
                     ( struct sockaddr *) &cliaddr, (socklen_t *)&len);
             std::string s((char *)client_message, message_size);
             deserialize_coords(s, m);
             return 0;
         }
-        
+
         return 1;
+    }
+
+
+  private:
+
+    // Private method to setup port, according to the data structure selected
+    Ports setupPort()
+    {
+      if(std::is_same<M, PrystineMessage>::value)
+        return Prystine_port;
+      else
+        return Std_port;
     }
 
 };
