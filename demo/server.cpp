@@ -26,10 +26,10 @@ void write_message(Message *m)
     for (int i = 0; i < m->objects.size(); i++)
     {
         printf("lat %f lon %f speed %d orient %d class %d\n",
-            m->objects.at(i).latitude, 
-            m->objects.at(i).longitude, 
-            m->objects.at(i).speed, 
-            m->objects.at(i).orientation, 
+            m->objects.at(i).latitude,
+            m->objects.at(i).longitude,
+            m->objects.at(i).speed,
+            m->objects.at(i).orientation,
             m->objects.at(i).category);
     }
 
@@ -37,10 +37,10 @@ void write_message(Message *m)
     for (int i = 0; i < m->lights.size(); i++)
     {
         printf("lat %f lon %f orient %d status %d time_to_change %d\n",
-            m->lights.at(i).latitude, 
-            m->lights.at(i).longitude, 
-            m->lights.at(i).orientation, 
-            m->lights.at(i).status, 
+            m->lights.at(i).latitude,
+            m->lights.at(i).longitude,
+            m->lights.at(i).orientation,
+            m->lights.at(i).status,
             m->lights.at(i).time_to_change);
     }
 
@@ -56,9 +56,9 @@ int main(int argc, char *argv[])
     int socket_desc, client_sock, c, *new_sock;
     struct sockaddr_in client;
 
-    Communicator Comm(SOCK_DGRAM);
+    Communicator<Message> Comm(SOCK_DGRAM);
 
-    Comm.open_server_socket(8888);
+    Comm.open_server_socket();
     socket_desc = Comm.get_socket();
 
     //Accept and incoming connection
@@ -98,13 +98,13 @@ int main(int argc, char *argv[])
 
         //Get the socket descriptor
         int read_size;
-    
+
         //Receive a message from client
         while (Comm.receive_message(socket_desc,m)==0)
         {
             write_message(m);
         }
-    }    
+    }
 
     return 0;
 }
@@ -120,7 +120,7 @@ void *connection_handler(void *socket_desc)
     //Get the socket descriptor
     int sock = *(int *)socket_desc;
     int read_size;
-    
+
     //Receive a message from client
     while (myComm.receive_message(sock,m)==0)
     {
