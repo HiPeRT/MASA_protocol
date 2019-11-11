@@ -22,7 +22,7 @@ void prepare_message(Message *m, int idx)
 {
     m->cam_idx = idx;
     m->t_stamp_ms = time_in_ms();
-    m->num_objects = 5;    
+    m->num_objects = 5;
 
     m->objects.clear();
     RoadUser r1{.3f,.4f,0,1,C_car};
@@ -47,9 +47,9 @@ void prepare_message(Message *m, int idx)
 int main(int argc, char *argv[])
 {
 
-    Communicator Comm(SOCK_DGRAM);
+    Communicator<Message> Comm(SOCK_DGRAM);
 
-    Comm.open_client_socket("127.0.0.1",8888);
+    Comm.open_client_socket("127.0.0.1");
 
     Message *m = new Message;
 
@@ -58,14 +58,13 @@ int main(int argc, char *argv[])
         prepare_message(m,i);
         std::stringbuf s;
         Comm.serialize_coords(m,&s);
-        
+
         std::cout<<s.str()<<std::endl;
         std::cout<<s.str().length()<<std::endl;
-        
+
         Comm.send_message(m);
         sleep(1);
     }
 
     return 0;
 }
-

@@ -6,9 +6,9 @@
 
 enum Categories : uint8_t
 {
-    C_person = 14, 
+    C_person = 14,
     C_bycicle = 1,
-    C_car = 6, 
+    C_car = 6,
     C_motorbike = 13,
     C_bus = 5,
     C_marelli1 = 20,
@@ -18,9 +18,18 @@ enum Categories : uint8_t
     C_rover = 40
 };
 
+
+// Ports for different messages to be added here
+enum Ports : uint16_t
+{
+    Std_port      = 8888,
+    Prystine_port = 8889
+};
+
+
 enum LightStatus : uint8_t
 {
-    L_green = 1, 
+    L_green = 1,
     L_yellow = 2,
     L_red = 3
 };
@@ -54,19 +63,70 @@ struct RoadUser{
 
 };
 
-struct Message{
-    uint32_t cam_idx;
-    uint64_t t_stamp_ms;
-    uint16_t num_objects;
-    std::vector<RoadUser> objects;
-    std::vector<TrafficLight> lights;
+
+//Hypothetic structure for vehicle
+struct Vehicle : RoadUser{
+    uint8_t rpm;
+    uint8_t gear;
+
+    // More fields to be added here
 
     template<class Archive>
-    void serialize(Archive & archive)
+    void serialize(Archive &archive)
     {
-        archive( cam_idx, t_stamp_ms, num_objects, objects, lights );
+        archive(
+                latitude,
+                longitude,
+                speed,
+                orientation,
+                category,
+                rpm,
+                gear
+              );
     }
 };
+
+
+
+
+
+//Vehicle struct for Christine HMI use-case scenario
+struct PrystineVehicle : Vehicle {
+    bool    is_distracted;
+    float   km_to_automation;
+    int8_t  steer_value;
+    float   drive_length;
+    float   start_auto;
+    float   end_auto;
+    float   fallback_pos;
+    uint8_t car_pos;
+
+    template<class Archive>
+    void serialize(Archive &archive)
+    {
+        archive(
+                latitude,
+                longitude,
+                speed,
+                orientation,
+                category,
+                rpm,
+                gear,
+                is_distracted,
+                km_to_automation,
+                steer_value,
+                drive_length,
+                start_auto,
+                end_auto,
+                fallback_pos,
+                car_pos
+              );
+    }
+};
+
+
+
+
 
 
 
