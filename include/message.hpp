@@ -42,4 +42,29 @@ struct PrystineMessage: Message{
 };
 
 
+
+//Dynacar
+struct DynacarVehicleMessage : Message{
+	DynacarVehicle vehicle;
+
+	template<class Archive>
+	void serialize(Archive & archive){
+		archive( cam_idx, t_stamp_ms, vehicle);
+	}
+};
+	
+struct DynaMessage : Message{
+	double speed;
+	double speed_km;
+	double x;
+	double y;
+	double z;
+
+	template<class Archive>
+	void serialize(Archive & archive){
+		archive( cam_idx, t_stamp_ms, speed, speed_km, x, y, z);
+	}	
+};
+
+
 #endif

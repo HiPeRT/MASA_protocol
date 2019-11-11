@@ -23,7 +23,9 @@ enum Categories : uint8_t
 enum Ports : uint16_t
 {
     Std_port      = 8888,
-    Prystine_port = 8889
+    Prystine_port = 8889,
+	toDynacar_port  = 8890,
+	fromDynacar_port  = 8891
 };
 
 
@@ -124,6 +126,28 @@ struct PrystineVehicle : Vehicle {
     }
 };
 
+
+struct DynacarVehicle : Vehicle{
+	double speed_d;
+	double speed_km;
+	double throttle;
+	double brake;
+	double n_steering;
+
+    template<class Archive>
+    void serialize(Archive &archive)
+    {
+        archive(
+                latitude,
+                longitude,
+                speed_d,
+				speed_km,
+				throttle,
+				brake,
+				n_steering
+              );
+    }
+};
 
 
 

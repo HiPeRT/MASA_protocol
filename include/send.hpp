@@ -226,6 +226,10 @@ class Communicator{
     {
       if(std::is_same<M, PrystineMessage>::value)
         return Prystine_port;
+	  else if(std::is_same<M, DynacarVehicleMessage>::value)
+		return toDynacar_port;
+	  else if(std::is_same<M, DynaMessage>::value)
+		return fromDynacar_port;
       else
         return Std_port;
     }
