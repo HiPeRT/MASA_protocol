@@ -33,11 +33,12 @@ struct MasaMessage : Message{
 //Message struct for Prystine HMI use-case scenario
 struct PrystineMessage: Message{
     PrystineVehicle pv;
+    PrystineGpsData gps;
 
     template<class Archive>
     void serialize(Archive & archive)
     {
-        archive(cam_idx, t_stamp_ms, pv);
+        archive(cam_idx, t_stamp_ms, pv, gps);
     }
 };
 
@@ -52,7 +53,7 @@ struct DynacarVehicleMessage : Message{
 		archive( cam_idx, t_stamp_ms, vehicle);
 	}
 };
-	
+
 struct DynaMessage : Message{
 	double speed;
 	double speed_km;
@@ -63,7 +64,7 @@ struct DynaMessage : Message{
 	template<class Archive>
 	void serialize(Archive & archive){
 		archive( cam_idx, t_stamp_ms, speed, speed_km, x, y, z);
-	}	
+	}
 };
 
 

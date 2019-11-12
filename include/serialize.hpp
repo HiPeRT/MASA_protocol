@@ -90,6 +90,30 @@ struct Vehicle : RoadUser{
 
 
 
+struct PrystineGpsData {
+  float     startAutomationLatitude;
+  float     startAutomationLongitude;
+  float     endAutomationLatitude;
+  float     endAutomationLongitude;
+  uint16_t  rotation;
+  float     destinationLatitude;
+  float     destinationLongitude;
+
+  template<class Archive>
+  void serialize(Archive &archive)
+  {
+      archive(
+              startAutomationLatitude,
+              startAutomationLongitude,
+              endAutomationLatitude,
+              endAutomationLongitude,
+              rotation,
+              destinationLatitude,
+              destinationLongitude              
+            );
+  }
+
+};
 
 
 //Vehicle struct for Christine HMI use-case scenario
