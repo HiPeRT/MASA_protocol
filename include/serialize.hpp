@@ -91,10 +91,10 @@ struct Vehicle : RoadUser{
 
 
 struct PrystineGpsData {
-  float     startAutomationLatitude;
+  /*float     startAutomationLatitude;
   float     startAutomationLongitude;
   float     endAutomationLatitude;
-  float     endAutomationLongitude;
+  float     endAutomationLongitude;*/
   uint16_t  rotation;
   float     destinationLatitude;
   float     destinationLongitude;
@@ -103,13 +103,13 @@ struct PrystineGpsData {
   void serialize(Archive &archive)
   {
       archive(
-              startAutomationLatitude,
+              /*startAutomationLatitude,
               startAutomationLongitude,
               endAutomationLatitude,
-              endAutomationLongitude,
+              endAutomationLongitude,*/
               rotation,
               destinationLatitude,
-              destinationLongitude              
+              destinationLongitude
             );
   }
 
