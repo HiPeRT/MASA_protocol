@@ -95,7 +95,7 @@ struct PrystineGpsData {
   float     startAutomationLongitude;
   float     endAutomationLatitude;
   float     endAutomationLongitude;*/
-  uint16_t  rotation;
+  uint16_t  rotation;       //you can probably use 'orientation'
   float     destinationLatitude;
   float     destinationLongitude;
 
