@@ -54,7 +54,7 @@ struct RoadUser{
     float latitude;
     float longitude;
     uint8_t speed;
-    uint8_t orientation;
+    uint16_t orientation;
     Categories category;
 
     template<class Archive>
