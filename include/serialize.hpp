@@ -114,7 +114,6 @@ struct PrystineVehicle : Vehicle {
     float   drive_length;
     float   start_auto;
     float   end_auto;
-    float   fallback_pos;
     uint8_t car_pos;
 
     template<class Archive>
@@ -134,7 +133,6 @@ struct PrystineVehicle : Vehicle {
                 drive_length,
                 start_auto,
                 end_auto,
-                fallback_pos,
                 car_pos
               );
     }
