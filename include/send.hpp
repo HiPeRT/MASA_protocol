@@ -10,13 +10,17 @@
 #include <arpa/inet.h>  //inet_addr
 #include <unistd.h>     //write
 
-#include "message.hpp"
+#include "configurator.hpp"
 
 //#define SOCKET_MODE SOCK_DGRAM //UDP
 //#define SOCKET_MODE SOCK_STREAM //TCP
 
 template <typename M>
 class Communicator{
+
+private:
+    Configurator<M> conf;
+
 
     public:
     static const int message_size = 50000;
@@ -81,7 +85,7 @@ class Communicator{
         puts("Socket created");
 
         this->ip = std::string(ip);
-        this->port = setupPort();
+        this->port = conf.getPort();
         server.sin_addr.s_addr = inet_addr(ip);
         server.sin_family = AF_INET;
         server.sin_port = htons(port);
@@ -113,7 +117,7 @@ class Communicator{
         }
         puts("Socket created");
 
-        this->port = setupPort();
+        this->port = conf.getPort();
         //Prepare the sockaddr_in structure
         server.sin_family = AF_INET;
         server.sin_addr.s_addr = INADDR_ANY;
@@ -216,22 +220,6 @@ class Communicator{
         }
 
         return 1;
-    }
-
-
-  private:
-
-    // Private method to setup port, according to the data structure selected
-    Ports setupPort()
-    {
-      if(std::is_same<M, PrystineMessage>::value)
-        return Prystine_port;
-	  else if(std::is_same<M, DynacarVehicleMessage>::value)
-		return toDynacar_port;
-	  else if(std::is_same<M, DynaMessage>::value)
-		return fromDynacar_port;
-      else
-        return Std_port;
     }
 
 };

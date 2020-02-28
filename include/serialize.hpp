@@ -19,16 +19,6 @@ enum Categories : uint8_t
 };
 
 
-// Ports for different messages to be added here
-enum Ports : uint16_t
-{
-    Std_port      = 8888,
-    Prystine_port = 8889,
-	toDynacar_port  = 8890,
-	fromDynacar_port  = 8891
-};
-
-
 enum LightStatus : uint8_t
 {
     L_green = 1,
