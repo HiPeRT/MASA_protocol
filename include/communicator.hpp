@@ -15,11 +15,13 @@
 //#define SOCKET_MODE SOCK_DGRAM //UDP
 //#define SOCKET_MODE SOCK_STREAM //TCP
 
+// TODO rename this header as MASA.hpp ?
+
 template <typename M>
 class Communicator{
 
 private:
-    Configurator<M> conf;
+    Configurator conf;
 
 
     public:
@@ -85,7 +87,7 @@ private:
         puts("Socket created");
 
         this->ip = std::string(ip);
-        this->port = conf.getPort();
+        this->port = conf.getPort(typeid(M).name());
         server.sin_addr.s_addr = inet_addr(ip);
         server.sin_family = AF_INET;
         server.sin_port = htons(port);
@@ -117,7 +119,7 @@ private:
         }
         puts("Socket created");
 
-        this->port = conf.getPort();
+        this->port = conf.getPort(typeid(M).name());
         //Prepare the sockaddr_in structure
         server.sin_family = AF_INET;
         server.sin_addr.s_addr = INADDR_ANY;
