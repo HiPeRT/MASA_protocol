@@ -10,19 +10,17 @@
 #include <arpa/inet.h>  //inet_addr
 #include <unistd.h>     //write
 
-#include "configurator.hpp"
-
 //#define SOCKET_MODE SOCK_DGRAM //UDP
 //#define SOCKET_MODE SOCK_STREAM //TCP
 
 // TODO rename this header as MASA.hpp ?
+#include "cereal/cereal.hpp"
+#include "cereal/archives/portable_binary.hpp"
 
 template <typename M>
 class Communicator{
 
 private:
-    Configurator conf;
-
 
     public:
     static const int message_size = 50000;
@@ -77,7 +75,7 @@ private:
     }
 
 
-    int open_client_socket(char *ip)
+    int open_client_socket(char *ip, int port)
     {
         sock = socket(AF_INET, SOCKET_MODE, 0);
         if (sock == -1)
@@ -87,7 +85,7 @@ private:
         puts("Socket created");
 
         this->ip = std::string(ip);
-        this->port = conf.getPort(typeid(M).name());
+        this->port = port;
         server.sin_addr.s_addr = inet_addr(ip);
         server.sin_family = AF_INET;
         server.sin_port = htons(port);
@@ -110,7 +108,7 @@ private:
         return 1;
     }
 
-    int open_server_socket()
+    int open_server_socket(int port)
     {
         sock = socket(AF_INET, SOCKET_MODE, 0);
         if (sock == -1)
@@ -119,7 +117,7 @@ private:
         }
         puts("Socket created");
 
-        this->port = conf.getPort(typeid(M).name());
+        this->port = port;
         //Prepare the sockaddr_in structure
         server.sin_family = AF_INET;
         server.sin_addr.s_addr = INADDR_ANY;
@@ -143,7 +141,7 @@ private:
         return 1;
     }
 
-    int send_message(M *m)
+    int send_message(M *m, int port)
     {
         /*serialize coords*/
         std::stringbuf *message = new std::stringbuf();
@@ -155,7 +153,7 @@ private:
             if (socket_opened == 0)
             {
                 std::vector<char> cstr(ip.c_str(), ip.c_str() + ip.size() + 1);
-                int res = open_client_socket(cstr.data());
+                int res = open_client_socket(cstr.data(), port);
                 if(res)
                     printf("Socket opened!\n");
                 else

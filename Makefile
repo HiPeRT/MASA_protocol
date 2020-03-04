@@ -1,10 +1,13 @@
 demo: server client
+CFLAGS=-Wall -g -std=c++11
+LDFLAGS=-lpthread -lrt
+INCLUDE=-I./cereal/include -I./include
 
 server: demo/server.cpp
-	g++ -Wall -g -std=c++11 -I./cereal/include -I./include demo/server.cpp -o server -lpthread -lrt
+	g++ ${CFLAGS} ${INCLUDE} demo/server.cpp -o server ${LDFLAGS}
 
 client: demo/client.cpp
-	g++ -Wall -g -std=c++11 -I./cereal/include -I./include demo/client.cpp -o client -lpthread -lrt
+	g++ ${CFLAGS} ${INCLUDE} demo/client.cpp -o client ${LDFLAGS}
 
 clean:
 	rm server

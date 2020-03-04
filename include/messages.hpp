@@ -1,7 +1,7 @@
-#ifndef MESSAGE_H
-#define MESSAGE_H
+#ifndef MESSAGES_H
+#define MESSAGES_H
 
-#include "serialize.hpp"
+#include "objects.hpp"
 
 
 struct Message{

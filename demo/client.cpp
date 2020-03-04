@@ -14,11 +14,11 @@
 #include <sys/stat.h>
 #include <string>
 
-#include <send.hpp>
+#include <masa.hpp>
 #include "../support.h"
 
 
-void prepare_message(Message *m, int idx)
+void prepare_message(MasaMessage *m, int idx)
 {
     m->cam_idx = idx;
     m->t_stamp_ms = time_in_ms();
@@ -46,12 +46,14 @@ void prepare_message(Message *m, int idx)
 
 int main(int argc, char *argv[])
 {
+    // Replace these with your server IP and port. See file "protocol_ports.md"
+    const char * ip = "127.0.0.1";
+    int port = 8888;
+    Communicator<MasaMessage> Comm(SOCK_DGRAM); // Specialize for your "message". See also "messages.hpp"
 
-    Communicator<Message> Comm(SOCK_DGRAM);
+    Comm.open_client_socket((char *) ip, port); 
 
-    Comm.open_client_socket("127.0.0.1");
-
-    Message *m = new Message;
+    MasaMessage *m = new MasaMessage;
 
     for (int i=0; i<10; i++)
     {
@@ -62,7 +64,7 @@ int main(int argc, char *argv[])
         std::cout<<s.str()<<std::endl;
         std::cout<<s.str().length()<<std::endl;
 
-        Comm.send_message(m);
+        Comm.send_message(m, port);
         sleep(1);
     }
 

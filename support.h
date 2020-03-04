@@ -1,4 +1,8 @@
-#include "serialize.hpp"
+// TODO ROB do we need this? Should we put it in the "demo" folder
+#ifndef SUPPORT_H
+#define SUPPORT_H
+
+#include "objects.hpp"
 #include <time.h>
 
 struct obj_coords
@@ -16,7 +20,7 @@ unsigned long long time_in_ms()
     return t_stamp_ms;
 }
 
-void create_Message(struct obj_coords *c, int obj_n, int CAM_IDX, Message *m)
+void create_MasaMessage(struct obj_coords *c, int obj_n, int CAM_IDX, MasaMessage *m)
 {   
     std::vector<RoadUser> ruv;
     int i;
@@ -30,3 +34,5 @@ void create_Message(struct obj_coords *c, int obj_n, int CAM_IDX, Message *m)
     m->num_objects = ruv.size();
     m->objects = ruv;    
 }
+
+#endif
