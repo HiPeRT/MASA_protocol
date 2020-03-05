@@ -14,33 +14,33 @@
 #include <sys/stat.h>
 #include <string>
 
-#include <send.hpp>
+#include <masa.hpp>
 
 
-void write_message(Message *m)
+void write_message(MasaMessage *m)
 {
     printf("Received message from %d at %lu with %lu road users and %lu traffic lights \n",
         m->cam_idx, m->t_stamp_ms, m->objects.size(), m->lights.size());
 
     printf("Objects: \n");
-    for (int i = 0; i < m->objects.size(); i++)
+    for (unsigned int i = 0; i < m->objects.size(); i++)
     {
         printf("lat %f lon %f speed %d orient %d class %d\n",
-            m->objects.at(i).latitude, 
-            m->objects.at(i).longitude, 
-            m->objects.at(i).speed, 
-            m->objects.at(i).orientation, 
+            m->objects.at(i).latitude,
+            m->objects.at(i).longitude,
+            m->objects.at(i).speed,
+            m->objects.at(i).orientation,
             m->objects.at(i).category);
     }
 
     printf("Lights: \n");
-    for (int i = 0; i < m->lights.size(); i++)
+    for (unsigned int i = 0; i < m->lights.size(); i++)
     {
         printf("lat %f lon %f orient %d status %d time_to_change %d\n",
-            m->lights.at(i).latitude, 
-            m->lights.at(i).longitude, 
-            m->lights.at(i).orientation, 
-            m->lights.at(i).status, 
+            m->lights.at(i).latitude,
+            m->lights.at(i).longitude,
+            m->lights.at(i).orientation,
+            m->lights.at(i).status,
             m->lights.at(i).time_to_change);
     }
 
@@ -56,9 +56,9 @@ int main(int argc, char *argv[])
     int socket_desc, client_sock, c, *new_sock;
     struct sockaddr_in client;
 
-    Communicator Comm(SOCK_DGRAM);
+    Communicator<MasaMessage> Comm(SOCK_DGRAM); // Specialize for your "message". See also "messages.hpp"
 
-    Comm.open_server_socket(8888);
+    Comm.open_server_socket(8888); // Replace this with your port. See file "protocol_ports.md"
     socket_desc = Comm.get_socket();
 
     //Accept and incoming connection
@@ -94,17 +94,14 @@ int main(int argc, char *argv[])
     }
     else
     {
-        Message *m = new Message;
+        MasaMessage *m = new MasaMessage;
 
-        //Get the socket descriptor
-        int read_size;
-    
         //Receive a message from client
         while (Comm.receive_message(socket_desc,m)==0)
         {
             write_message(m);
         }
-    }    
+    }
 
     return 0;
 }
@@ -114,13 +111,14 @@ int main(int argc, char *argv[])
  * */
 void *connection_handler(void *socket_desc)
 {
-    Communicator myComm(SOCK_STREAM);
-    Message *m = new Message;
+    Communicator<MasaMessage> myComm(SOCK_STREAM);  // Specialize for your "message". See also "messages.hpp"
+                                                          
+    MasaMessage *m = new MasaMessage;
 
     //Get the socket descriptor
     int sock = *(int *)socket_desc;
-    int read_size;
-    
+    int read_size; // TODO ROB BUG...? This is never initialized
+
     //Receive a message from client
     while (myComm.receive_message(sock,m)==0)
     {

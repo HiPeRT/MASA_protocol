@@ -10,17 +10,22 @@
 #include <arpa/inet.h>  //inet_addr
 #include <unistd.h>     //write
 
-#include "serialize.hpp"
-
 //#define SOCKET_MODE SOCK_DGRAM //UDP
 //#define SOCKET_MODE SOCK_STREAM //TCP
 
+// TODO rename this header as MASA.hpp ?
+#include "cereal/cereal.hpp"
+#include "cereal/archives/portable_binary.hpp"
+
+template <typename M>
 class Communicator{
 
-    public: 
+private:
+
+    public:
     static const int message_size = 50000;
     int sock;
-    int port; 
+    int port;
     int socket_opened = 0;
     std::string ip;
     char client_message[message_size];
@@ -40,14 +45,14 @@ class Communicator{
         return sock;
     }
 
-    void serialize_coords(Message *m, std::stringbuf* buf)
+    void serialize_coords(M *m, std::stringbuf* buf)
     {
         std::ostream os(buf);
         cereal::PortableBinaryOutputArchive archive(os);
         archive(*m);
     }
 
-    void deserialize_coords(char *buffer, Message *m)
+    void deserialize_coords(char *buffer, M *m)
     {
         std::stringbuf buf(buffer);
         std::istream is(&buf);
@@ -55,20 +60,20 @@ class Communicator{
         retrieve(*m);
     }
 
-    void deserialize_coords(std::string s, Message *m)
+    void deserialize_coords(std::string s, M *m)
     {
         std::istringstream is(s);
         cereal::PortableBinaryInputArchive retrieve(is);
-        try 
+        try
         {
             retrieve(*m);
         }
         catch (std::bad_alloc& ba)
         {
-            std::cout << "Packet drop"<<std::endl; 
+            std::cout << "Packet drop"<<std::endl;
         }
     }
-    
+
 
     int open_client_socket(char *ip, int port)
     {
@@ -127,7 +132,7 @@ class Communicator{
         puts("bind done");
 
         if (SOCKET_MODE == SOCK_DGRAM)
-        {            
+        {
             return 1;
         }
 
@@ -136,7 +141,7 @@ class Communicator{
         return 1;
     }
 
-    int send_message(Message *m)
+    int send_message(M *m, int port)
     {
         /*serialize coords*/
         std::stringbuf *message = new std::stringbuf();
@@ -171,13 +176,13 @@ class Communicator{
              sendto(sock, message->str().data(), message->str().length(), 0,
                 (const struct sockaddr *) &server, sizeof(server));
         }
-        
+
 
         delete message;
         return 1;
     }
 
-    int receive_message(int socket_desc, Message *m)
+    int receive_message(int socket_desc, M *m)
     {
         int read_size;
         memset(client_message, 0, message_size);
@@ -206,14 +211,14 @@ class Communicator{
         else
         {
             int len;
-            struct sockaddr_in cliaddr; 
+            struct sockaddr_in cliaddr;
             read_size = recvfrom(sock, client_message, message_size, 0,
                     ( struct sockaddr *) &cliaddr, (socklen_t *)&len);
             std::string s((char *)client_message, message_size);
             deserialize_coords(s, m);
             return 0;
         }
-        
+
         return 1;
     }
 

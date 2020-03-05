@@ -14,15 +14,15 @@
 #include <sys/stat.h>
 #include <string>
 
-#include <send.hpp>
+#include <masa.hpp>
 #include "../support.h"
 
 
-void prepare_message(Message *m, int idx)
+void prepare_message(MasaMessage *m, int idx)
 {
     m->cam_idx = idx;
     m->t_stamp_ms = time_in_ms();
-    m->num_objects = 5;    
+    m->num_objects = 5;
 
     m->objects.clear();
     RoadUser r1{.3f,.4f,0,1,C_car};
@@ -46,26 +46,27 @@ void prepare_message(Message *m, int idx)
 
 int main(int argc, char *argv[])
 {
+    // Replace these with your server IP and port. See file "protocol_ports.md"
+    const char * ip = "127.0.0.1";
+    int port = 8888;
+    Communicator<MasaMessage> Comm(SOCK_DGRAM); // Specialize for your "message". See also "messages.hpp"
 
-    Communicator Comm(SOCK_DGRAM);
+    Comm.open_client_socket((char *) ip, port); 
 
-    Comm.open_client_socket("127.0.0.1",8888);
-
-    Message *m = new Message;
+    MasaMessage *m = new MasaMessage;
 
     for (int i=0; i<10; i++)
     {
         prepare_message(m,i);
         std::stringbuf s;
         Comm.serialize_coords(m,&s);
-        
+
         std::cout<<s.str()<<std::endl;
         std::cout<<s.str().length()<<std::endl;
-        
-        Comm.send_message(m);
+
+        Comm.send_message(m, port);
         sleep(1);
     }
 
     return 0;
 }
-
