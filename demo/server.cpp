@@ -86,6 +86,7 @@ int main(int argc, char *argv[])
                     if(port == 0)
                     {
                         printf("\nInvalid port number param '%s'\n\n", argv[i]);
+                        usage(argv[0]);
                         exit(EXIT_FAILURE);
                     }
 
