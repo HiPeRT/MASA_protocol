@@ -44,11 +44,67 @@ void prepare_message(MasaMessage *m, int idx)
 
 }
 
+void usage(char * progname)
+{
+    printf("Usage: %s [-h] [-p <port>] [-u <server url>]\n", progname);
+}
+
 int main(int argc, char *argv[])
 {
-    // Replace these with your server IP and port. See file "protocol_ports.md"
+    // See file "protocol_ports.md"
     const char * ip = "127.0.0.1";
     int port = 8888;
+
+    // Parse args
+    for(int i=1; i<argc; i++)
+    {
+        printf("argv[%d] = %s\n", i, argv[i]);
+        if(argv[i][0] == '-')
+        {
+            switch(argv[i][1])
+            {
+                case 'h':
+                    usage(argv[0]);
+                    exit(EXIT_SUCCESS);
+                    break;
+
+                case 'p':
+
+                    if(++i >= argc)
+                    {
+                        printf("\nError. Missing port number param\n\n");
+                        usage(argv[0]);
+                        exit(EXIT_FAILURE);
+                    }
+                    
+                    port = atoi(argv[i]);
+                    if(port == 0)
+                    {
+                        printf("\nInvalid port number param '%s'\n\n", argv[i]);
+                        exit(EXIT_FAILURE);
+                    }
+
+                    break;
+
+                case 'u':
+                    if(++i >= argc)
+                    {
+                        printf("\nError. Missing url param\n\n");
+                        usage(argv[0]);
+                        exit(EXIT_FAILURE);
+                    }
+
+                    ip = argv[i];
+
+                    break;
+
+                default:
+                    usage(argv[0]);
+                    exit(EXIT_FAILURE);
+            }
+        }
+    }
+
     Communicator<MasaMessage> Comm(SOCK_DGRAM); // Specialize for your "message". See also "messages.hpp"
 
     Comm.open_client_socket((char *) ip, port); 

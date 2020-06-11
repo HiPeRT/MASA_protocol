@@ -81,8 +81,10 @@ private:
         if (sock == -1)
         {
             printf("Could not create socket");
+            socket_opened = 0;
+            return 1;
         }
-        puts("Socket created");
+        printf("Created socket to %s:%d\n\n", ip, port);
 
         this->ip = std::string(ip);
         this->port = port;
@@ -114,6 +116,7 @@ private:
         if (sock == -1)
         {
             printf("Could not create socket");
+            return 1;
         }
         puts("Socket created");
 
@@ -129,7 +132,7 @@ private:
             perror("bind failed. Error");
             return 1;
         }
-        puts("bind done");
+        printf("Bind to port %d done\n\n", port);
 
         if (SOCKET_MODE == SOCK_DGRAM)
         {
