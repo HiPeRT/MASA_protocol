@@ -52,7 +52,7 @@ void *connection_handler(void *);
 
 void usage(char * progname)
 {
-    printf("Usage: %s [-h] [-p <port>] [-u <server url>]\n", progname);
+    printf("Usage: %s [-h] [-p <port>]\n", progname);
 }
 
 int main(int argc, char *argv[])
