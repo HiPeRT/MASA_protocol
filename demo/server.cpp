@@ -50,15 +50,57 @@ void write_message(MasaMessage *m)
 //the thread function
 void *connection_handler(void *);
 
+void usage(char * progname)
+{
+    printf("Usage: %s [-h] [-p <port>] [-u <server url>]\n", progname);
+}
+
 int main(int argc, char *argv[])
 {
 
-    int socket_desc, client_sock, c, *new_sock;
+    int socket_desc, client_sock, c, *new_sock, port = 8888;
     struct sockaddr_in client;
+
+    // Parse args
+    for(int i=1; i<argc; i++)
+    {
+        if(argv[i][0] == '-')
+        {
+            switch(argv[i][1])
+            {
+                case 'h':
+                    usage(argv[0]);
+                    exit(EXIT_SUCCESS);
+                    break;
+
+                case 'p':
+
+                    if(++i >= argc)
+                    {
+                        printf("\nError. Missing port number param\n\n");
+                        usage(argv[0]);
+                        exit(EXIT_FAILURE);
+                    }
+                    
+                    port = atoi(argv[i]);
+                    if(port == 0)
+                    {
+                        printf("\nInvalid port number param '%s'\n\n", argv[i]);
+                        exit(EXIT_FAILURE);
+                    }
+
+                    break;
+
+                default:
+                    usage(argv[0]);
+                    exit(EXIT_FAILURE);
+            }
+        }
+    }
 
     Communicator<MasaMessage> Comm(SOCK_DGRAM); // Specialize for your "message". See also "messages.hpp"
 
-    Comm.open_server_socket(8888); // Replace this with your port. See file "protocol_ports.md"
+    Comm.open_server_socket(port); // Replace this with your port. See file "protocol_ports.md"
     socket_desc = Comm.get_socket();
 
     //Accept and incoming connection
@@ -117,7 +159,7 @@ void *connection_handler(void *socket_desc)
 
     //Get the socket descriptor
     int sock = *(int *)socket_desc;
-    int read_size; // TODO ROB BUG...? This is never initialized
+    int read_size = 0;
 
     //Receive a message from client
     while (myComm.receive_message(sock,m)==0)

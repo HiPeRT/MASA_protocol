@@ -58,7 +58,6 @@ int main(int argc, char *argv[])
     // Parse args
     for(int i=1; i<argc; i++)
     {
-        printf("argv[%d] = %s\n", i, argv[i]);
         if(argv[i][0] == '-')
         {
             switch(argv[i][1])
